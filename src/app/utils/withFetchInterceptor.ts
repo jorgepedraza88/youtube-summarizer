@@ -21,55 +21,47 @@ export async function withFetchInterceptor<T>(
   globalThis.fetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
     const resource = typeof input === 'string' ? input : input.toString();
 
-    // If the URL meets the condition (e.g. YouTube transcript URL)
-    if (resource.includes('youtube.com')) {
-      // Convert headers to a plain object, if they exist
-      let headers: Record<string, string> | undefined;
+    // Convert headers to a plain object, if they exist
+    let headers: Record<string, string> | undefined;
 
-      if (init?.headers) {
-        if (init.headers instanceof Headers) {
-          headers = Object.fromEntries(init.headers.entries());
-        } else if (Array.isArray(init.headers)) {
-          headers = Object.fromEntries(init.headers);
-        } else {
-          headers = init.headers as Record<string, string>;
-        }
-      }
-
-      try {
-        const axiosResponse = await axios({
-          method: init?.method || 'GET',
-          url: resource,
-          headers,
-          data: init?.body,
-          httpsAgent: agent,
-          timeout: 10000
-        });
-
-        // Rebuild headers in Fetch API format
-        const responseHeaders = new Headers();
-        Object.entries(axiosResponse.headers).forEach(([key, value]) => {
-          if (Array.isArray(value)) {
-            responseHeaders.set(key, value.join(', '));
-          } else {
-            responseHeaders.set(key, value);
-          }
-        });
-
-        return new Response(axiosResponse.data, {
-          status: axiosResponse.status,
-          statusText: axiosResponse.statusText,
-          headers: responseHeaders
-        });
-      } catch (error) {
-        const message =
-          error instanceof Error ? error.message || 'Error in proxy fetch' : 'Unknown error';
-        return new Response(message, { status: 500 });
+    if (init?.headers) {
+      if (init.headers instanceof Headers) {
+        headers = Object.fromEntries(init.headers.entries());
+      } else if (Array.isArray(init.headers)) {
+        headers = Object.fromEntries(init.headers);
+      } else {
+        headers = init.headers as Record<string, string>;
       }
     }
 
-    // For other URLs, use the original fetch
-    return originalFetch(input, init);
+    try {
+      const axiosResponse = await axios({
+        method: init?.method || 'GET',
+        url: resource,
+        headers,
+        data: init?.body,
+        httpsAgent: agent,
+        timeout: 15000
+      });
+
+      // Rebuild headers in Fetch API format
+      const responseHeaders = new Headers();
+      Object.entries(axiosResponse.headers).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          responseHeaders.set(key, value.join(', '));
+        } else {
+          responseHeaders.set(key, value);
+        }
+      });
+
+      return new Response(axiosResponse.data, {
+        status: axiosResponse.status,
+        statusText: axiosResponse.statusText,
+        headers: responseHeaders
+      });
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : 'Unknown error');
+    }
   };
 
   try {
