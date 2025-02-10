@@ -1,0 +1,25 @@
+{
+  "singleQuote": true,
+  "trailingComma": "none",
+  "importOrder": [
+    "^react",
+    "<THIRD_PARTY_MODULES>",
+    "",
+    "^@/enums$",
+    "^@/enums/(.*)$",
+    "^@/types/(.*)$",
+    "^@/hooks/(.*)$",
+    "^@/contexts/(.*)$",
+    "^@/utils/(.*)$",
+    "^@/components/(.*)$",
+    "^@/pages/(.*)$",
+    "^@/vendor/(.*)$",
+    "^@/(.*)$",
+    "^[./]"
+  ],
+  "plugins": [
+    "@ianvs/prettier-plugin-sort-imports",
+    "prettier-plugin-tailwindcss"
+  ],
+  "printWidth": 100
+}

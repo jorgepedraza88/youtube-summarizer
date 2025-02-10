@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: 'Geist', sans-serif;
+}
+
+.markdown {
+  @apply p-2;
+}
+
+.markdown h1 {
+  @apply my-4 text-5xl font-bold;
+}
+
+.markdown h2 {
+  @apply my-4 text-3xl font-bold;
+}
+
+.markdown h3 {
+  @apply my-4 text-2xl font-bold;
+}
+
+.markdown p {
+  @apply my-4;
+}
+
+.markdown ul {
+  @apply ml-8 list-disc;
+}
+
+.markdown ol {
+  @apply ml-8 list-decimal;
+}
+
+.markdown li {
+  @apply my-2;
+}
+
+.markdown pre {
+  @apply rounded-md bg-neutral-900 p-4 font-mono text-sm whitespace-break-spaces;
+}
+
+.markdown code {
+  @apply rounded-md bg-neutral-900 p-1 font-mono text-sm;
+}
