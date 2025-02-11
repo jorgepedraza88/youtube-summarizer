@@ -14,13 +14,13 @@ export async function POST(request: Request) {
     const genAI = new GoogleGenerativeAI(geminiAPIKey);
 
     const generationConfig = {
-      temperature: 0.7,
+      temperature: 0.6,
       responseMimeType: 'text/plain',
       maxOutputTokens: 2000
     };
 
     const model = genAI.getGenerativeModel({
-      model: 'gemini-1.5-flash-8b',
+      model: 'gemini-2.0-flash',
       systemInstruction: 'casual tone, natural output in a well formatted text',
       generationConfig
     });
