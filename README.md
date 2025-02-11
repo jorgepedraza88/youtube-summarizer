@@ -8,7 +8,6 @@ YouTube Summarizer is a powerful tool that extracts and summarizes YouTube video
 
 - 🎯 **AI-powered Summarization** - Automatically extracts key points from YouTube videos.
 - 🔄 **Proxy Support** - Uses a proxy to bypass YouTube restrictions.
-- ⚡ **Fast and Efficient** - Built with **Next.js 15** and optimized for performance.
 - 🎨 **Clean UI** - Minimalist and responsive design using **TailwindCSS**.
 
 ## 📸 Demo
@@ -60,7 +59,7 @@ npm run dev
 
 - **Frontend**: Next.js, React, TailwindCSS
 - **Backend**: Next.js API Routes, Axios
-- **AI Services**: Google Generative AI (Gemini-2.0-Flash)
+- **AI Services**: Google Generative AI (Gemini-1.5-flash-8b)
 - **Proxy Support**: A secure proxy for bypassing YouTube restrictions
 
 ## 📄 License

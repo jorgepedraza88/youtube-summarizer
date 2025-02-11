@@ -36,16 +36,9 @@ export async function POST(request: Request) {
       });
     }
 
-    let transcriptItems;
-
-    // Check if we are in the local dev mode to avoid making request with the proxy
-    if (process.env.NODE_ENV !== 'development') {
-      transcriptItems = await withFetchInterceptor(agent, async () => {
-        return await YoutubeTranscript.fetchTranscript(url);
-      });
-    }
-
-    transcriptItems = await YoutubeTranscript.fetchTranscript(url);
+    const transcriptItems = await withFetchInterceptor(agent, async () => {
+      return await YoutubeTranscript.fetchTranscript(url);
+    });
 
     let language = 'en';
 
