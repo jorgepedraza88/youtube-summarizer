@@ -14,13 +14,13 @@ export async function POST(request: Request) {
     const genAI = new GoogleGenerativeAI(geminiAPIKey);
 
     const generationConfig = {
-      temperature: 0.6,
+      temperature: 0.7,
       responseMimeType: 'text/plain',
       maxOutputTokens: 2000
     };
 
     const model = genAI.getGenerativeModel({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-1.5-flash-8b',
       systemInstruction: 'casual tone, natural output in a well formatted text',
       generationConfig
     });
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
     
     #### **General Content**
     - Use **bullet points** to summarize key insights.
-    - Expand on main topics while avoiding unnecessary examples.
+    - Expand on main topics while avoiding unnecessary examples. Use minimum 80 words per section.
     
     ### **Strict Output Rules**:
     - **Do NOT include introductions, conclusions, or extra explanations.**

@@ -59,7 +59,7 @@ npm run dev
 
 - **Frontend**: Next.js, React, TailwindCSS
 - **Backend**: Next.js API Routes, Axios
-- **AI Services**: Google Generative AI (Gemini-2.0-flash)
+- **AI Services**: Google Generative AI (Gemini-1.5-flash-8b)
 - **Proxy Support**: A secure proxy for bypassing YouTube restrictions
 
 ## 📄 License
