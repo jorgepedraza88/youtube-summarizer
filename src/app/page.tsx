@@ -27,7 +27,7 @@ function Home() {
       } = await axios.post('/api/get-video-info', { url: youtubeURL });
 
       if (status !== 200) {
-        throw new Error(transcriptError || 'Failed to generate summary');
+        throw new Error(transcriptError.message || 'Failed to generate summary');
       }
 
       const {
