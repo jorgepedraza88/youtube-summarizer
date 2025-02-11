@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import axios from 'axios';
 
 import { Button } from './components/Button';
 import { ErrorMessage } from './components/ErrorMessage';
@@ -20,21 +21,28 @@ function Home() {
     setSummary('');
 
     try {
-      const response = await fetch('/api/summarize', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ url: youtubeURL })
-      });
+      const {
+        data: { transcript, language, error: transcriptError },
+        status
+      } = await axios.post('/api/get-video-info', { url: youtubeURL });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to generate summary');
+      if (status !== 200) {
+        throw new Error(transcriptError || 'Failed to generate summary');
       }
 
-      setSummary(data.summary);
+      const {
+        data: { summary: summaryData },
+        status: summaryStatus
+      } = await axios.post('/api/summarize', {
+        transcript: transcript,
+        language
+      });
+
+      if (summaryStatus !== 200) {
+        throw new Error('Failed to generate summary');
+      }
+
+      setSummary(summaryData);
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);

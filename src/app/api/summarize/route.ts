@@ -1,47 +1,9 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { NextResponse } from 'next/server';
-import tunnel from 'tunnel';
-import { YoutubeTranscript } from 'youtube-transcript';
-
-import { withFetchInterceptor } from '@/app/utils/withFetchInterceptor';
-
-const transcriptCache = new Map<string, string>();
 
 export async function POST(request: Request) {
   try {
-    const { url } = await request.json();
-
-    // Validate URL format
-    const videoIdMatch = url.match(/(?:v=|\/|youtu\.be\/)([a-zA-Z0-9_-]{11})(?:[&?\/]|$)/);
-
-    if (!videoIdMatch) {
-      return NextResponse.json({ error: 'Invalid YouTube URL' }, { status: 400 });
-    }
-
-    // Use proxy for requests to avoid Youtube blocking
-    const agent = tunnel.httpsOverHttp({
-      proxy: {
-        host: process.env.PROXY_HOST ?? '',
-        port: Number(process.env.PROXY_PORT) ?? '',
-        proxyAuth: `${process.env.PROXY_USER}:${process.env.PROXY_PASSWORD}`
-      }
-    });
-
-    const videoId = videoIdMatch[1];
-
-    // Check cache first before fetching transcript
-    if (transcriptCache.has(videoId)) {
-      return NextResponse.json({
-        summary: transcriptCache.get(videoId),
-        cached: true
-      });
-    }
-
-    const transcriptItems = await withFetchInterceptor(agent, async () => {
-      return await YoutubeTranscript.fetchTranscript(url);
-    });
-
-    const transcript = transcriptItems.map((item) => item.text).join(' ');
+    const { transcript, language } = await request.json();
 
     const geminiAPIKey = process.env.GEMINI_API_KEY;
 
@@ -54,18 +16,18 @@ export async function POST(request: Request) {
     const generationConfig = {
       temperature: 0.7,
       responseMimeType: 'text/plain',
-      maxOutputTokens: 1500
+      maxOutputTokens: 2000
     };
 
     const model = genAI.getGenerativeModel({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-1.5-flash-8b',
       systemInstruction: 'casual tone, natural output in a well formatted text',
       generationConfig
     });
 
     const prompt = `
     Analyze the following transcript and determine:
-    1. **Language**: Detect the language of the transcript and ensure the summary is written in the same language.
+    1. **Language**: Use: ${language} , or Detect the language of the transcript and ensure the summary is written in the same language.
     2. **Category** (Choose the most appropriate one based on content structure):
        - **Recipe**: If it contains step-by-step cooking instructions.
        - **Lesson or Tutorial**: If it explains a concept, teaches something, or provides a **step-by-step guide** (e.g., "How to run DeepSeek locally").
@@ -101,9 +63,6 @@ export async function POST(request: Request) {
 
     const finalData = finalResponse.response;
     const finalSummary = finalData.text();
-
-    // Cache result
-    transcriptCache.set(videoId, finalSummary);
 
     return NextResponse.json({
       summary: finalSummary,
