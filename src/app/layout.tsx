@@ -28,7 +28,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} bg-neutral-900 antialiased`}>
         <main className="relative h-screen w-full">{children}</main>
-        <footer className="fixed right-2 top-2 flex items-center justify-center gap-2 p-1 text-center text-xs text-neutral-100 transition-colors hover:text-teal-500 lg:p-2">
+        <footer className="absolute right-2 top-2 flex items-center justify-center gap-2 p-1 text-center text-xs text-neutral-100 transition-colors hover:text-teal-500 lg:p-2">
           <a
             href="https://github.com/jorgepedraza88/youtube-summarizer"
             target="_blank"

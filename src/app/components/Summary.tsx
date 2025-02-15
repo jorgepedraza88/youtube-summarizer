@@ -3,13 +3,18 @@
 import ReactMarkdown from 'react-markdown';
 
 import { useSummary } from '../SummaryContext';
+import { cn } from '../utils/tailwind';
 
 export function Summary() {
-  const { summary, isLoadingSummary } = useSummary();
+  const { summary, isLoadingSummary, isLoadingTranscript } = useSummary();
 
-  if (!isLoadingSummary) {
+  if (isLoadingTranscript || isLoadingSummary) {
     return (
-      <div className="mx-auto mt-8 max-w-4xl px-2">
+      <div
+        className={cn('mx-auto mt-8 max-w-4xl px-2 opacity-0 transition-opacity duration-500', {
+          'opacity-100': !isLoadingTranscript && isLoadingSummary
+        })}
+      >
         <div className="animate-pulse text-center text-neutral-100 lg:ml-4 lg:text-left">
           &quot;Generating your summary... Hang tight!&quot; 🚀
         </div>

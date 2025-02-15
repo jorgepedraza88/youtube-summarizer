@@ -3,10 +3,10 @@
 import { IoIosPaperPlane as SendIcon } from 'react-icons/io';
 
 import { useSummary } from '../SummaryContext';
-import { ErrorMessage } from './ErrorMessage';
+import { cn } from '../utils/tailwind';
 
 export function Form() {
-  const { youtubeURL, setYoutubeURL, error, handleSubmitURL } = useSummary();
+  const { youtubeURL, error, setYoutubeURL, handleSubmitURL, setError } = useSummary();
 
   return (
     <form
@@ -15,9 +15,17 @@ export function Form() {
     >
       <input
         value={youtubeURL}
-        onChange={(e) => setYoutubeURL(e.target.value)}
+        onChange={(e) => {
+          setError('');
+          setYoutubeURL(e.target.value);
+        }}
         placeholder="Paste YouTube URL here..."
-        className="w-full resize-none rounded-md border px-2 py-3 pr-10 text-sm text-neutral-900 shadow-sm focus:outline-teal-500"
+        className={cn(
+          'w-full resize-none rounded-md border px-2 py-3 pr-12 text-sm text-neutral-900 shadow-sm focus:outline-teal-500',
+          {
+            'border-red-500': error
+          }
+        )}
       />
       <button
         type="submit"
@@ -31,7 +39,6 @@ export function Form() {
           happens, please try again.
         </p>
       </div>
-      {error && <ErrorMessage>{error}</ErrorMessage>}
     </form>
   );
 }

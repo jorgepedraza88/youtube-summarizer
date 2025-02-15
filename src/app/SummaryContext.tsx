@@ -1,11 +1,14 @@
 'use client';
 
 import { createContext, useContext, useState } from 'react';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
+
+import { ErrorToast } from './components/ErrorToast';
 
 interface SummaryContextType {
   summary: string;
   youtubeURL: string;
+  isLoadingTranscript: boolean;
   isLoadingSummary: boolean;
   error: string;
   setYoutubeURL: React.Dispatch<React.SetStateAction<string>>;
@@ -21,6 +24,7 @@ export function SummaryProvider({ children }: { children: React.ReactNode }) {
   const [summary, setSummary] = useState('');
   const [youtubeURL, setYoutubeURL] = useState('');
   const [isLoadingSummary, setIsLoadingSummary] = useState(false);
+  const [isLoadingTranscript, setIsLoadingTranscript] = useState(false);
   const [error, setError] = useState('');
 
   const handleSubmitURL = async (e: React.FormEvent) => {
@@ -30,47 +34,43 @@ export function SummaryProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    setIsLoadingSummary(true);
+    setIsLoadingTranscript(true);
     setError('');
     setSummary('');
 
     try {
       const {
-        data: { transcript, language, error: transcriptError },
-        status
+        data: { transcript, language }
       } = await axios.post('/api/get-video-info', { url: youtubeURL });
 
-      if (status !== 200) {
-        throw new Error(transcriptError.message || 'Failed to generate summary');
-      }
+      setIsLoadingTranscript(false);
 
+      setIsLoadingSummary(true);
       const {
-        data: { summary: summaryData },
-        status: summaryStatus
+        data: { summary: summaryData }
       } = await axios.post('/api/summarize', {
         transcript: transcript,
         language
       });
 
-      if (summaryStatus !== 200) {
-        throw new Error('Failed to generate summary');
-      }
-
       setSummary(summaryData);
     } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message);
+      if (error instanceof AxiosError) {
+        setError(error.response?.data.error);
       } else {
         setError('An error occurred');
       }
     } finally {
-      setIsLoadingSummary(false);
+      setTimeout(() => {
+        setIsLoadingSummary(false);
+      }, 200);
     }
   };
 
   const contextValue = {
     summary,
     youtubeURL,
+    isLoadingTranscript,
     isLoadingSummary,
     error,
     setSummary,
@@ -80,7 +80,12 @@ export function SummaryProvider({ children }: { children: React.ReactNode }) {
     handleSubmitURL
   };
 
-  return <SummaryContext.Provider value={contextValue}>{children}</SummaryContext.Provider>;
+  return (
+    <SummaryContext.Provider value={contextValue}>
+      {children}
+      <ErrorToast message={error} onClose={() => setError('')} />
+    </SummaryContext.Provider>
+  );
 }
 
 export const useSummary = () => {
