@@ -30,7 +30,7 @@ export function SummaryProvider({ children }: { children: React.ReactNode }) {
   const handleSubmitURL = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!youtubeURL || isLoadingSummary) {
+    if (!youtubeURL || isLoadingSummary || isLoadingTranscript) {
       return;
     }
 

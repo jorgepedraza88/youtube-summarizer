@@ -11,7 +11,7 @@ export function Summary() {
   if (isLoadingTranscript || isLoadingSummary) {
     return (
       <div
-        className={cn('mx-auto mt-8 max-w-4xl px-2 opacity-0 transition-opacity duration-500', {
+        className={cn('mx-auto mt-8 max-w-4xl px-2 opacity-0 transition-opacity duration-300', {
           'opacity-100': !isLoadingTranscript && isLoadingSummary
         })}
       >
