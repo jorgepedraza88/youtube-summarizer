@@ -1,17 +1,17 @@
 'use client';
 
-import { useSummary } from '../SummaryContext';
+import { LOADING_STATES, useSummary } from '../SummaryContext';
 import { cn } from '../utils/tailwind';
 
 export function Title() {
-  const { summary, isLoadingSummary, isLoadingTranscript } = useSummary();
+  const { loadingState } = useSummary();
 
   return (
     <div
       className={cn(
         'mx-auto h-auto max-w-4xl text-center transition-all duration-500 sm:px-6 lg:px-8',
         {
-          'flex translate-y-80 flex-col justify-end': !summary && !isLoadingSummary && !isLoadingTranscript
+          'flex translate-y-80 flex-col justify-end': loadingState === LOADING_STATES.INITIAL
         }
       )}
     >

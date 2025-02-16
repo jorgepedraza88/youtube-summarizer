@@ -22,13 +22,13 @@ export function ErrorToast({ message, onClose, duration = 3000 }: ErrorToastProp
   return (
     <div
       className={cn(
-        'fixed bottom-40 left-5 z-50 flex -translate-x-16 items-center gap-3 rounded-lg border border-red-400 bg-red-100 px-4 py-3 text-sm text-red-700 shadow-lg transition-all duration-500 ease-out',
+        'fixed bottom-40 left-5 z-50 flex -translate-x-16 items-center gap-3 whitespace-break-spaces rounded-lg border border-red-400 bg-red-100 px-4 py-3 text-sm text-red-700 shadow-lg transition-all duration-500 ease-out',
         {
           'translate-x-0': message
         }
       )}
     >
-      <span>{message}</span>
+      <span className="max-w-60 lg:max-w-80">{message}</span>
     </div>
   );
 }

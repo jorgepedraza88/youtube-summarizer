@@ -1,9 +1,20 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { NextResponse } from 'next/server';
 
+const geminiCache = new Map<string, string>();
+
 export async function POST(request: Request) {
   try {
     const { transcript, language } = await request.json();
+    const cacheKey = `${language}-${transcript}`;
+
+    // Check cache first before fetching gemini summary
+    if (geminiCache.has(cacheKey)) {
+      return NextResponse.json({
+        summary: geminiCache.get(cacheKey),
+        cached: true
+      });
+    }
 
     const geminiAPIKey = process.env.GEMINI_API_KEY;
 
@@ -64,13 +75,19 @@ export async function POST(request: Request) {
     const finalData = finalResponse.response;
     const finalSummary = finalData.text();
 
+    // Cache result
+    geminiCache.set(cacheKey, finalSummary);
+
     return NextResponse.json({
       summary: finalSummary,
       cached: false
     });
   } catch (error) {
     if (error instanceof Error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json(
+        { error: 'An error ocurred proccessing the summary with Gemini, please try again later' },
+        { status: 500 }
+      );
     }
     return NextResponse.json({ error: 'An unknown error occurred' }, { status: 500 });
   }

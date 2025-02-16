@@ -6,7 +6,8 @@ import { useSummary } from '../SummaryContext';
 import { cn } from '../utils/tailwind';
 
 export function Form() {
-  const { youtubeURL, error, setYoutubeURL, handleSubmitURL, setError } = useSummary();
+  const { youtubeURL, errorMessage, setYoutubeURL, handleSubmitURL, setErrorMessage } =
+    useSummary();
 
   return (
     <form
@@ -16,14 +17,14 @@ export function Form() {
       <input
         value={youtubeURL}
         onChange={(e) => {
-          setError('');
+          setErrorMessage('');
           setYoutubeURL(e.target.value);
         }}
         placeholder="Paste YouTube URL here..."
         className={cn(
           'w-full resize-none rounded-md border px-2 py-3 pr-12 text-sm text-neutral-900 shadow-sm focus:outline-teal-500',
           {
-            'border-red-500': error
+            'border-red-500': errorMessage
           }
         )}
       />
@@ -35,8 +36,8 @@ export function Form() {
       </button>
       <div className="mt-1 text-right text-xs text-neutral-500">
         <p>
-          Sometimes, the summary may fail on the first attempt due to Vercel&apos;s limits. If that
-          happens, please try again.
+          Sometimes, the summary may fail on the first attempt due to Vercel&apos;s & Gemini limits.
+          If that happens, please try again.
         </p>
       </div>
     </form>
