@@ -57,6 +57,7 @@ export function SummaryProvider({ children }: { children: React.ReactNode }) {
       });
 
       setSummary(summaryData);
+      setLoadingState(LOADING_STATES.SUCCESS);
     } catch (error) {
       if (error instanceof AxiosError) {
         setErrorMessage(error.response?.data.error);
@@ -65,8 +66,6 @@ export function SummaryProvider({ children }: { children: React.ReactNode }) {
       }
 
       setLoadingState(LOADING_STATES.INITIAL);
-    } finally {
-      setLoadingState(LOADING_STATES.SUCCESS);
     }
   };
 
