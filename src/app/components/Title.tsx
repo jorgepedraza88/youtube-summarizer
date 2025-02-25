@@ -11,7 +11,8 @@ export function Title() {
       className={cn(
         'mx-auto h-auto max-w-4xl text-center transition-all duration-500 sm:px-6 lg:px-8',
         {
-          'flex translate-y-80 flex-col justify-end': loadingState === LOADING_STATES.INITIAL
+          'flex translate-y-64 flex-col justify-end lg:translate-y-80':
+            loadingState === LOADING_STATES.INITIAL
         }
       )}
     >
