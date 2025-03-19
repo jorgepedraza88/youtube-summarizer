@@ -32,14 +32,14 @@ export async function POST(request: Request) {
 
     const model = genAI.getGenerativeModel({
       model: 'gemini-1.5-flash-8b',
-      systemInstruction: 'casual tone, natural output in a well formatted text',
+      systemInstruction: 'You are an assistant helping a user summarize a Youtube video transcript. The user has asked you to analyze the following transcript and determine the language and category of the content. The user has also provided some formatting rules to follow. Please provide a summary based on the content structure using a casual tone.',
       generationConfig
     });
 
     const prompt = `
     Analyze the following transcript and determine:
-    1. **Language**: Use: ${language} , or Detect the language of the transcript and ensure the summary is written in the same language.
-    2. **Category** (Choose the most appropriate one based on content structure):
+    1. **Language**: Use: ${language} if provided , or Detect the language of the transcript and ensure the summary is written in the same language\n
+    2. **Category** (Choose the most appropriate one based on content structure):\n
        - **Recipe**: If it contains step-by-step cooking instructions.
        - **Lesson or Tutorial**: If it explains a concept, teaches something, or provides a **step-by-step guide** (e.g., "How to run DeepSeek locally").
        - **General Content**: If it's a podcast, discussion, opinion piece, or informal talk.
