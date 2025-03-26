@@ -1,5 +1,7 @@
 # YouTube Summarizer
 
+![image](https://github.com/user-attachments/assets/33c3d2be-41e0-4f25-93de-06d71f9df441)
+
 ## 🚀 Overview
 
 YouTube Summarizer is a powerful tool that extracts and summarizes YouTube video transcripts using AI. This project leverages **Next.js, Google Cloud AI, and Generative AI models** to generate concise and easy-to-read summaries of video content.
