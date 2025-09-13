@@ -16,10 +16,12 @@ type LoadingState = (typeof LOADING_STATES)[keyof typeof LOADING_STATES];
 interface SummaryContextType {
   summary: string;
   youtubeURL: string;
+  selectedLanguage: string;
   loadingState: LoadingState;
   errorMessage: string;
   setYoutubeURL: React.Dispatch<React.SetStateAction<string>>;
   setSummary: React.Dispatch<React.SetStateAction<string>>;
+  setSelectedLanguage: React.Dispatch<React.SetStateAction<string>>;
   setLoadingState: React.Dispatch<React.SetStateAction<LoadingState>>;
   setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
   handleSubmitURL: (e: React.FormEvent) => Promise<void>;
@@ -30,6 +32,7 @@ export const SummaryContext = createContext<SummaryContextType | null>(null);
 export function SummaryProvider({ children }: { children: React.ReactNode }) {
   const [summary, setSummary] = useState('');
   const [youtubeURL, setYoutubeURL] = useState('');
+  const [selectedLanguage, setSelectedLanguage] = useState('english');
   const [loadingState, setLoadingState] = useState<LoadingState>(LOADING_STATES.INITIAL);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -46,14 +49,14 @@ export function SummaryProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const {
-        data: { transcript, language }
+        data: { transcript }
       } = await axios.post('/api/get-video-info', { url: youtubeURL });
 
       const {
         data: { summary: summaryData }
       } = await axios.post('/api/summarize', {
         transcript: transcript,
-        language
+        language: selectedLanguage
       });
 
       setSummary(summaryData);
@@ -73,10 +76,12 @@ export function SummaryProvider({ children }: { children: React.ReactNode }) {
   const contextValue = {
     summary,
     youtubeURL,
+    selectedLanguage,
     loadingState,
     errorMessage,
     setSummary,
     setYoutubeURL,
+    setSelectedLanguage,
     setLoadingState,
     setErrorMessage,
     handleSubmitURL

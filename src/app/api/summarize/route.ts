@@ -32,19 +32,17 @@ export async function POST(request: Request) {
 
     const model = genAI.getGenerativeModel({
       model: 'gemini-2.5-flash-lite',
-      systemInstruction: 'You are a multilingual assistant that summarizes YouTube video transcripts. CRITICAL REQUIREMENT: You MUST respond in the same language as the input transcript. If the transcript is in Spanish, respond in Spanish. If in English, respond in English. Language matching is mandatory and non-negotiable. Analyze the transcript content, determine its category, and provide a well-structured summary following the specified formatting rules.',
+      systemInstruction: `You are a multilingual assistant that summarizes YouTube video transcripts. CRITICAL REQUIREMENT: You MUST respond in ${language}. This is absolutely mandatory and non-negotiable. The user has explicitly selected ${language} as their preferred language, so you must provide the summary in ${language} regardless of the transcript's original language. Analyze the transcript content, determine its category, and provide a well-structured summary following the specified formatting rules.`,
       generationConfig
     });
 
     const prompt = `
     🚨 **MANDATORY LANGUAGE REQUIREMENT** 🚨
-    You MUST respond in the SAME LANGUAGE as the transcript below.
-    - If transcript is in Spanish → Response in Spanish
-    - If transcript is in English → Response in English  
-    - If transcript is in French → Response in French
-    - Language parameter provided: ${language || 'AUTO-DETECT'}
+    You MUST respond in ${language.toUpperCase()}.
+    The user has explicitly selected ${language} as their preferred output language.
+    You must provide the summary in ${language} regardless of the transcript's original language.
     
-    **ABSOLUTE REQUIREMENT**: Match the transcript language exactly. This is non-negotiable.
+    **ABSOLUTE REQUIREMENT**: Respond in ${language}. This is non-negotiable.
 
     Now analyze the transcript and determine:
 
@@ -71,13 +69,13 @@ export async function POST(request: Request) {
     - Avoid unnecessary examples
 
     ### **CRITICAL OUTPUT RULES:**
-    - **LANGUAGE MATCH IS MANDATORY** - Respond in transcript's language
+    - **LANGUAGE REQUIREMENT IS MANDATORY** - Respond in ${language}
     - **NO introductions, conclusions, or meta-explanations**
     - **NO "Analysis" or "Summary" headers**
     - **Start directly with the content**
     - **NO phrases like "Here's the analysis" or "Summary of the transcript"**
     
-    **REMINDER**: Your response language MUST match the transcript language below.
+    **FINAL REMINDER**: Your response MUST be in ${language}.
     
     Transcript:
     \n\n${transcript}
