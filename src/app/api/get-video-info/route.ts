@@ -51,7 +51,7 @@ export async function POST(request: Request) {
     // Cache result
     transcriptCache.set(videoId, transcript);
 
-    return NextResponse.json({ transcript, language: 'auto', cached: false });
+    return NextResponse.json({ transcript, cached: false });
   } catch (error) {
     if (error instanceof Error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
