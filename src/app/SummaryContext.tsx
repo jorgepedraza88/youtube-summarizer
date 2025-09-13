@@ -58,6 +58,7 @@ export function SummaryProvider({ children }: { children: React.ReactNode }) {
 
       setSummary(summaryData);
       setLoadingState(LOADING_STATES.SUCCESS);
+      setYoutubeURL(''); // Clear input on success
     } catch (error) {
       if (error instanceof AxiosError) {
         setErrorMessage(error.response?.data.error);
