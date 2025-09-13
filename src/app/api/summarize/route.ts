@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     };
 
     const model = genAI.getGenerativeModel({
-      model: 'gemini-1.5-flash-8b',
+      model: 'gemini-2.5-flash-lite',
       systemInstruction: 'You are an assistant helping a user summarize a Youtube video transcript. The user has asked you to analyze the following transcript and determine the language and category of the content. The user has also provided some formatting rules to follow. Please provide a summary based on the content structure using a casual tone.',
       generationConfig
     });

@@ -21,6 +21,10 @@ export async function withFetchInterceptor<T>(
   globalThis.fetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
     const resource = typeof input === 'string' ? input : input.toString();
 
+    console.log('🌐 Intercepted fetch request:', resource);
+    console.log('🌐 Request method:', init?.method || 'GET');
+    console.log('🌐 Request body:', init?.body ? 'Present' : 'None');
+
     // Convert headers to a plain object, if they exist
     let headers: Record<string, string> | undefined;
 
@@ -34,6 +38,8 @@ export async function withFetchInterceptor<T>(
       }
     }
 
+    console.log('🌐 Request headers:', headers);
+
     try {
       const axiosResponse = await axios({
         method: init?.method || 'GET',
@@ -43,6 +49,30 @@ export async function withFetchInterceptor<T>(
         httpsAgent: agent,
         timeout: 15000
       });
+
+      console.log('✅ HTTP Response status:', axiosResponse.status);
+      console.log('✅ HTTP Response headers:', axiosResponse.headers);
+      console.log('✅ HTTP Response data type:', typeof axiosResponse.data);
+      console.log(
+        '✅ HTTP Response data length:',
+        typeof axiosResponse.data === 'string'
+          ? axiosResponse.data.length
+          : Array.isArray(axiosResponse.data)
+            ? axiosResponse.data.length
+            : axiosResponse.data
+              ? Object.keys(axiosResponse.data).length
+              : 0
+      );
+
+      // Log first 500 chars of response for debugging
+      if (typeof axiosResponse.data === 'string') {
+        console.log('✅ HTTP Response preview:', axiosResponse.data.substring(0, 500) + '...');
+      } else {
+        console.log(
+          '✅ HTTP Response data:',
+          JSON.stringify(axiosResponse.data, null, 2).substring(0, 500) + '...'
+        );
+      }
 
       // Rebuild headers in Fetch API format
       const responseHeaders = new Headers();
@@ -60,6 +90,7 @@ export async function withFetchInterceptor<T>(
         headers: responseHeaders
       });
     } catch (error) {
+      console.error('❌ HTTP Request failed:', error);
       throw new Error(error instanceof Error ? error.message : 'Unknown error');
     }
   };

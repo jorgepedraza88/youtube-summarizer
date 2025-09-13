@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server';
-import tunnel from 'tunnel';
-import { YoutubeTranscript } from 'youtube-transcript';
+import { Innertube } from 'youtubei.js';
 
-import { withFetchInterceptor } from '@/app/utils/withFetchInterceptor';
-
+// Simple transcript cache
 const transcriptCache = new Map<string, string>();
 
 export async function POST(request: Request) {
@@ -17,53 +15,47 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invalid YouTube URL' }, { status: 400 });
     }
 
-    // Use proxy for requests to avoid Youtube blocking
-    const agent = tunnel.httpsOverHttp({
-      proxy: {
-        host: process.env.PROXY_HOST ?? '',
-        port: Number(process.env.PROXY_PORT) ?? '',
-        proxyAuth: `${process.env.PROXY_USER}:${process.env.PROXY_PASSWORD}`
-      }
-    });
-
     const videoId = videoIdMatch[1];
 
     // Check cache first before fetching transcript
     if (transcriptCache.has(videoId)) {
-      return NextResponse.json({
-        transcript: transcriptCache.get(videoId),
-        cached: true
-      });
+      return NextResponse.json({ transcript: transcriptCache.get(videoId), cached: true });
     }
 
-    const transcriptItems = await withFetchInterceptor(agent, async () => {
-      return await YoutubeTranscript.fetchTranscript(url);
-    });
+    const youtube = await Innertube.create();
+    const info = await youtube.getInfo(videoId);
+    const transcriptData = await info.getTranscript();
 
-    let language = 'en';
+    if (!transcriptData) {
+      return NextResponse.json(
+        { error: 'Transcript not available for this video' },
+        { status: 404 }
+      );
+    }
 
-    const transcript = transcriptItems
-      .map((item, index) => {
-        if (index === 0 && item.lang) {
-          language = item.lang;
-        }
-        return item.text;
-      })
+    const segments = transcriptData.transcript?.content?.body?.initial_segments || [];
+    
+    const transcript = segments
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .map((segment: any) => segment.snippet?.text || '')
+      .filter((text: string) => text.trim())
       .join(' ');
+
+    if (!transcript.trim()) {
+      return NextResponse.json(
+        { error: 'Could not extract transcript text' },
+        { status: 404 }
+      );
+    }
 
     // Cache result
     transcriptCache.set(videoId, transcript);
 
-    return NextResponse.json({
-      transcript,
-      language,
-      cached: false
-    });
+    return NextResponse.json({ transcript, language: 'auto', cached: false });
   } catch (error) {
     if (error instanceof Error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
-
     return NextResponse.json({ error: 'An unknown error occurred' }, { status: 500 });
   }
 }
